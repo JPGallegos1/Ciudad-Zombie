@@ -47,14 +47,14 @@ var Juego = {
 
   ],
 
-  
+
 }
 
 /* Se cargan los recursos de las imagenes, para tener un facil acceso
 a ellos. No hace falta comprender esta parte. Pero si queres agregar tus propies
 imagenes tendras que poner su ruta en la lista para que pueda ser precargada como
 todas las demas. */
-Juego.iniciarRecursos = function() {
+Juego.iniciarRecursos = function () {
   Resources.load([
     'imagenes/mapa.png',
     'imagenes/mensaje_gameover.png',
@@ -79,11 +79,11 @@ Juego.iniciarRecursos = function() {
 };
 
 // Agrega los bordes de las veredas a los obstaculos de la carretera
-Juego.obstaculos = function() {
+Juego.obstaculos = function () {
   return this.obstaculosCarretera.concat(this.bordes);
 };
 
-Juego.comenzar = function() {
+Juego.comenzar = function () {
   // Inicializar el canvas del juego
   Dibujante.inicializarCanvas(this.anchoCanvas, this.altoCanvas);
   /* El bucle principal del juego se llamara continuamente para actualizar
@@ -92,7 +92,7 @@ Juego.comenzar = function() {
   this.buclePrincipal();
 };
 
-Juego.buclePrincipal = function() {
+Juego.buclePrincipal = function () {
 
   // Con update se actualiza la logica del juego, tanto ataques como movimientos
   this.update();
@@ -102,13 +102,13 @@ Juego.buclePrincipal = function() {
   window.requestAnimationFrame(this.buclePrincipal.bind(this));
 };
 
-Juego.update = function() {
+Juego.update = function () {
   this.calcularAtaques();
   this.moverEnemigos();
 }
 // Captura las teclas y si coincide con alguna de las flechas tiene que
 // hacer que el jugador principal se mueva
-Juego.capturarMovimiento = function(tecla) {
+Juego.capturarMovimiento = function (tecla) {
   var movX = 0;
   var movY = 0;
   var velocidad = this.jugador.velocidad;
@@ -127,16 +127,39 @@ Juego.capturarMovimiento = function(tecla) {
     movY = velocidad;
   }
 
+  // switch (tecla) {
+  //   case 'izq':
+  //     movX = -velocidad;
+  //     break;
+
+  //   case 'arriba':
+  //     movY = -velocidad;
+
+  //   case 'der':
+  //     movX = velocidad;
+
+  //   case 'abajo':
+  //     movY = velocidad;
+
+  //   default:
+  //     break;
+  // }
+
+  this.jugador.girar(tecla);
+
+  movX += this.jugador.x;
+  movY += this.jugador.y;
+
+
   // Si se puede mover hacia esa posicion hay que hacer efectivo este movimiento
-  if (this.chequearColisiones(movX + this.jugador.x, movY + this.jugador.y)) {
+  if (this.chequearColisiones(movX, movY)) {
     /* Aca tiene que estar la logica para mover al jugador invocando alguno
     de sus metodos  */
-
-    /* COMPLETAR */
+    this.jugador.mover(movX, movY);
   }
 };
 
-Juego.dibujar = function() {
+Juego.dibujar = function () {
   // Borrar el fotograma actual
   Dibujante.borrarAreaDeJuego();
   //Se pinta la imagen de fondo segun el estado del juego
@@ -149,16 +172,16 @@ Juego.dibujar = function() {
 
   Dibujante.dibujarEntidad(Jugador);
 
- 
+
   /* Completar */
 
   // Se recorren los obstaculos de la carretera pintandolos
-  this.obstaculosCarretera.forEach(function(obstaculo) {
+  this.obstaculosCarretera.forEach(function (obstaculo) {
     Dibujante.dibujarEntidad(obstaculo);
   });
 
   // Se recorren los enemigos pintandolos
-  this.enemigos.forEach(function(enemigo) {
+  this.enemigos.forEach(function (enemigo) {
     /* Completar */
   });
 
@@ -176,7 +199,7 @@ Juego.dibujar = function() {
 /* Recorre los enemigos haciendo que se muevan. De la misma forma que hicimos
 un recorrido por los enemigos para dibujarlos en pantalla ahora habra que hacer
 una funcionalidad similar pero para que se muevan.*/
-Juego.moverEnemigos = function() {
+Juego.moverEnemigos = function () {
   /* COMPLETAR */
 };
 
@@ -184,8 +207,8 @@ Juego.moverEnemigos = function() {
 Si colisiona empieza el ataque el zombie, si no, deja de atacar.
 Para chequear las colisiones estudiar el metodo posicionValida. Alli
 se ven las colisiones con los obstaculos. En este caso sera con los zombies. */
-Juego.calcularAtaques = function() {
-  this.enemigos.forEach(function(enemigo) {
+Juego.calcularAtaques = function () {
+  this.enemigos.forEach(function (enemigo) {
     if (this.intersecan(enemigo, this.jugador, this.jugador.x, this.jugador.y)) {
       /* Si el enemigo colisiona debe empezar su ataque
       COMPLETAR */
@@ -200,9 +223,9 @@ Juego.calcularAtaques = function() {
 
 /* Aca se chequea si el jugador se peude mover a la posicion destino.
  Es decir, que no haya obstaculos que se interpongan. De ser asi, no podra moverse */
-Juego.chequearColisiones = function(x, y) {
+Juego.chequearColisiones = function (x, y) {
   var puedeMoverse = true
-  this.obstaculos().forEach(function(obstaculo) {
+  this.obstaculos().forEach(function (obstaculo) {
     if (this.intersecan(obstaculo, this.jugador, x, y)) {
 
       /*COMPLETAR, obstaculo debe chocar al jugador*/
@@ -215,7 +238,7 @@ Juego.chequearColisiones = function(x, y) {
 
 /* Este metodo chequea si los elementos 1 y 2 si cruzan en x e y
  x e y representan la coordenada a la cual se quiere mover el elemento2*/
-Juego.intersecan = function(elemento1, elemento2, x, y) {
+Juego.intersecan = function (elemento1, elemento2, x, y) {
   var izquierda1 = elemento1.x
   var derecha1 = izquierda1 + elemento1.ancho
   var techo1 = elemento1.y
@@ -229,7 +252,7 @@ Juego.intersecan = function(elemento1, elemento2, x, y) {
     (derecha1 >= izquierda2) && (izquierda1 <= derecha2))
 };
 
-Juego.dibujarFondo = function() {
+Juego.dibujarFondo = function () {
   // Si se termino el juego hay que mostrar el mensaje de game over de fondo
   if (this.terminoJuego()) {
     Dibujante.dibujarImagen('imagenes/mensaje_gameover.png', 0, 5, this.anchoCanvas, this.altoCanvas);
@@ -245,12 +268,12 @@ Juego.dibujarFondo = function() {
   }
 };
 
-Juego.terminoJuego = function() {
+Juego.terminoJuego = function () {
   return this.jugador.vidas <= 0;
 };
 
 /* Se gana el juego si se sobre pasa cierto altura y */
-Juego.ganoJuego = function() {
+Juego.ganoJuego = function () {
   return (this.jugador.y + this.jugador.alto) > 530;
 };
 
@@ -259,15 +282,14 @@ Juego.iniciarRecursos();
 // Activa las lecturas del teclado al presionar teclas
 // Documentacion: https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener
 
-  document.addEventListener('keydown', function(e) {
-    var allowedKeys = {
-      37: 'izq',
-      38: 'arriba',
-      39: 'der',
-      40: 'abajo'
-    };
-  
-    Juego.capturarMovimiento(allowedKeys[e.keyCode]);
-  
-  });
+document.addEventListener('keydown', function (e) {
+  var allowedKeys = {
+    37: 'izq',
+    38: 'arriba',
+    39: 'der',
+    40: 'abajo'
+  };
+
+  Juego.capturarMovimiento(allowedKeys[e.keyCode]);
+});
 
